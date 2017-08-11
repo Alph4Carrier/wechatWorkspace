@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>后台设置</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+	<link href="/static/css/index.css?v={$css_version}" rel="stylesheet" type="text/css" media="all">
+	<script type='text/javascript' src='/static/js/jquery-1.11.0.min.js' ></script>
+</head>
+<body>
+	<div class="black_bak"></div>
+	<div class="main">
+		<div class="sidebar">
+			<p></p>
+			<ul class="toolbar">
+				<li>
+					<div><img src="" width="25px" height="25px"><span>首页设置</span><i></i></div>
+					<ul>
+						<li class="setting" id="Round">横幅设置</li>
+						<li class="setting" id="Category">产品分类设置</li>
+						<li class="setting" id="Detail">产品详情设置</li>
+					</ul>
+				</li>
+				<li><div><img src="" width="25px" height="25px"><span>活动设置</span><i></i></div></li>
+				<li><div><img src="" width="25px" height="25px"><span>关于设置</span><i></i></div></li>
+				<li><div><img src="" width="25px" height="25px"><span>客服设置</span><i></i></div></li>
+				<li><div><img src="" width="25px" height="25px"><span>表单设置</span><i></i></div></li>
+				<li><div><img src="" width="25px" height="25px"><span>我要推广</span><i></i></div></li>
+				<li><div><img src="" width="25px" height="25px"><span>我要定制</span><i></i></div></li>
+				<li><div><img src="" width="25px" height="25px"><span>我的客户经理</span><i></i></div></li>
+			</ul>
+		</div>
+		<div class="content"></div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	function ajaxRequest(id){
+		if(id){
+			$.ajax({
+		       url: "//" + document.domain + "/index/" + id,
+		       type: 'GET',
+		       dataType: 'JSON',
+		       timeout: 30000,    //超时时间：30秒
+		       error: function () {
+		           //出现错误，直接显示通知。
+		       },
+		       success: function (data) {
+		           if(data.code==0)
+		           {
+		               $('.content').html(data.html);
+		           }
+		           // showNotify(-1,'查询成功',1,'warning',0);
+		       }
+		   });
+		}
+	}
+
+	$(document).on("click",".setting",function(){
+		var id = $(this).attr("id");
+		ajaxRequest(id);
+		$(".setting").removeClass('active');
+		$(this).addClass('active');
+	});
+
+	$("#Round").trigger("click");
+</script>
+</html>

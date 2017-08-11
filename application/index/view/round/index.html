@@ -1,0 +1,119 @@
+<div class="title">横幅设置</div>
+<div class="picContent">
+	{volist name="picList" id="pic"}
+		{if condition="$pic.ID"}
+			<div class="picInside" id="pic_{$pic.ID}" data-id="{$pic.ID}"><img src="{$pic.source_url}" width="100%" height="100%"></div>
+		{else /}
+			<div class="picInside"></div>
+		{/if}
+	{/volist}
+	<span>建议上传横幅尺寸：750×420像素</span>
+	<button class="add_pic">添加横幅<input type="file" id="add_pic" style="position: absolute;left: 0;top: 0;width: 78px;height: 26px;opacity: 0;"></button>
+	<button class="remove_pic">删除横幅</button>
+</div>
+
+<div class="message_alert_round">
+	<div class="header"><span>删除横幅确认</span><a></a></div>
+	<span>删除横幅后，该横幅在移动端不再显示</span>
+	<button class="submit">确定</button>
+	<button class="cancle">取消</button>
+</div>
+
+<script type="text/javascript">
+	function picUpload(file,width,height,succCallback,endCallback){
+	   	var url = "//" + document.domain + "/index/pictureUpload";
+	   	var xhr = new XMLHttpRequest();
+	   	var formData = new FormData();
+	   	formData.append("upfile", file);
+	   	xhr.onreadystatechange = function() {
+	       	if (xhr.readyState == 4) {
+	           var resp;
+	           try{
+	              	resp= $.parseJSON(xhr.responseText);
+	           }catch(e){
+	               resp = {msg_type:'danger',msg:'图片上传失败，请重试。'};
+	           }
+	           if(resp['code']==0){
+	               if(succCallback) succCallback(resp['data']);
+	           }else{
+
+	           }
+	           if(endCallback) endCallback();
+	       }
+	   	};
+	   	xhr.open("POST", url, true);
+	   	xhr.send(formData);
+	}
+
+	$(window).resize(function() {
+		var widths = parseInt($(".picContent").css("width"));
+		var heights = parseInt($(".picContent").css("height"));
+		var newWidth = ((widths - 20) / 3) - 18;
+	  	$('.picInside').css('width',newWidth + "px");
+	  	$('.picInside').css('height',newWidth * 0.56 + "px");
+	}).resize();
+
+	if($(".picInside>img").length >= 3){
+		$(".add_pic").hide();
+	}else{
+		$(".add_pic").show();
+	}
+
+	$(document).on("click",".picInside",function(){
+		if($(this).attr("id")){
+			$(".remove_pic").show();
+			$(".picInside").removeClass('active');
+			$(this).addClass('active');
+		}else{
+			$(".remove_pic").hide();
+		}
+		if($(".picInside>img").length >= 3){
+			$(".add_pic").hide();
+		}else{
+			$(".add_pic").show();
+		}
+	});
+
+	$(document).on('click',".remove_pic",function(){
+		$(".black_bak").show();
+		$(".message_alert_round").show();
+	});
+
+	$(document).on("click",".message_alert_round .submit",function(){
+		var id = $(".picContent .active").data("id");
+		if(id){
+			$.ajax({
+		       url: "__URL__/removePic",
+		       type: 'POST',
+		       dataType: 'JSON',
+		       timeout: 30000,    //超时时间：30秒
+		       data: {"id":id},
+		       error: function () {
+		           //出现错误，直接显示通知。
+		       },
+		       success: function (data) {
+		           console.log(data);
+		           if(data.code == 0){
+		           	$(".black_bak").hide();
+						$(".message_alert_round").hide();
+						$("#Round").trigger("click");
+		           }
+		           // showNotify(-1,'查询成功',1,'warning',0);
+		       }
+		   });
+		}
+	});
+
+	$(document).on("click",".message_alert_round .cancle",function(){
+		$(".black_bak").hide();
+		$(".message_alert_round").hide();
+	});
+
+	$('#add_pic').change(function(){
+        picUpload(this.files.item(0),0,0,function(data){
+           console.log(data);
+        });
+        this.value='';
+    });
+
+</script>
