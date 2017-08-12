@@ -10,6 +10,7 @@
 </head>
 <body>
 	<div class="black_bak"></div>
+	<div class="message_tip"><img><span></span></div>
 	<div class="main">
 		<div class="sidebar">
 			<p></p>
@@ -36,6 +37,46 @@
 </body>
 
 <script type="text/javascript">
+	function showMessageTip(msg){
+		$(".message_tip>span").html(msg);
+		$(".message_tip").animate({"top":"0px"});
+		setTimeout(function(){
+			$(".message_tip").animate({"top":"-30px"});
+		},3000);
+	}
+
+	function initButtonCookie(id, init = true){
+		var selectId = "";
+		if (document.cookie.length>0)
+		{
+			if(id){
+				var exdate = new Date();
+				exdate.setDate(exdate.getDate() + 1);
+				document.cookie = "selectModuleId=" + id + ";expires=" + exdate.toGMTString();
+			}else{
+				c_name  = "selectModuleId";
+				c_start = document.cookie.indexOf(c_name + "=");
+			  	if (c_start != -1)
+			    { 
+			    	c_start = c_start + c_name.length + 1;
+			    	c_end 	= document.cookie.indexOf(";", c_start);
+			    	if(c_end==-1) c_end = document.cookie.length;
+			        var selectId = unescape(document.cookie.substring(c_start,c_end))
+			    } 
+			}
+		}else{
+			var selectId = "Round";
+			var exdate = new Date();
+			exdate.setDate(exdate.getDate() + 1);
+			document.cookie = "selectModuleId=" + id + ";expires=" + exdate.toGMTString();
+		}
+
+		if(selectId && init){
+			$("#" + selectId).parent().siblings("div").trigger("click");
+			$("#" + selectId).trigger("click");
+		}
+	}
+
 	function ajaxRequest(id){
 		if(id){
 			$.ajax({
@@ -51,7 +92,6 @@
 		           {
 		               $('.content').html(data.html);
 		           }
-		           // showNotify(-1,'查询成功',1,'warning',0);
 		       }
 		   });
 		}
@@ -60,10 +100,22 @@
 	$(document).on("click",".setting",function(){
 		var id = $(this).attr("id");
 		ajaxRequest(id);
+		initButtonCookie(id, false);
 		$(".setting").removeClass('active');
 		$(this).addClass('active');
 	});
 
-	$("#Round").trigger("click");
+	$(document).on('click',".toolbar>li>div",function(){
+		if($(this).hasClass("active")){
+			$(this).removeClass("active");
+			$(this).siblings("ul").animate({"height":"0"});
+		}else{
+			$(this).addClass("active");
+			var count = $(this).siblings("ul").children("li").length;
+			$(this).siblings("ul").animate({"height":count * 30 + "px"});
+		}
+	});
+
+	initButtonCookie();
 </script>
 </html>

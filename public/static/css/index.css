@@ -30,13 +30,14 @@ body {
 }
 
 .content {
-	width: calc(100% - 240px);
+	width: calc(100% - 239px);
 	min-width: 800px;
 	min-height: 600px;
 	height: 100%;
 	background: #f6f6f6;
 	position: absolute;
 	left: 240px;
+	border-left: 1px solid #E8E8E8;
 }
 
 .sidebar>p {
@@ -67,6 +68,7 @@ body {
 .toolbar>li>div>img {
 	margin: 5px;
    	float: left;
+   	overflow: hidden;
 }
 
 .toolbar>li>div>span {
@@ -79,6 +81,8 @@ body {
 
 .toolbar ul {
 	padding: 0;
+	overflow: hidden;
+	height: 0;
 }
 
 .toolbar ul>li {
@@ -235,4 +239,27 @@ body {
 	border: 1px solid #0070C9;
 	right: 110px;
 	color: #FFFFFF;
+}
+
+.message_tip {
+	background: green;
+	position: absolute;
+	top: -30px;
+	overflow: hidden;
+	width: 200px;
+	left: calc(50% - 100px);
+	line-height: 30px;
+	color: white;
+	text-align: center;
+	font-weight: lighter;
+	height: 30px;
+	z-index: 10001;
+}
+
+.message_tip>img {
+	width: 20px;
+	height: 20px;
+	margin: 5px;
+	margin-bottom: -5px;
+    margin-right: 5px;
 }
