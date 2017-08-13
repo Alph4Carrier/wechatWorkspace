@@ -1,0 +1,83 @@
+<div class="title">产品分类设置</div>
+<div class="cateContent">
+	{volist name="cateList" id="cate"}
+		{if condition="$cate.ID"}
+			<div>
+				<div class="cateInside" id="cate_{$cate.ID}" data-id="{$cate.ID}"><img src="{$cate.source_url}" width="100%" height="100%"></div>
+				<span>{$cate.title}</span>
+			</div>
+		{else /}
+			<div>
+				<div class="cateInside"></div>
+				<span>产品分类标题</span>
+			</div>
+		{/if}
+	{/volist}
+	<button class="add_cate">添加横幅</button>
+	<button class="remove_cate">删除横幅</button>
+	<button class="edit_cate">修改横幅</button>
+</div>
+
+<div class="message_alert_round">
+	<div class="header"><span>删除分类确认</span><a></a></div>
+	<span>删除分类后，该分类内的所有产品数据将删除清空，是否确认删除</span>
+	<button class="submit">确定</button>
+	<button class="cancle">取消</button>
+</div>
+
+<script type="text/javascript">
+	$(window).resize(function() {
+		var widths = parseInt($(".cateContent").css("width"));
+		var heights = parseInt($(".cateContent").css("height"));
+		var newWidth = ((widths - 20) / 3) - 18;
+	  	$('.cateInside').css('width',newWidth + "px");
+	  	$('.cateInside').css('height',newWidth * 0.56 + "px");
+	}).resize();
+
+	$(document).on("click",".cateContent>div",function(){
+		if($(this).children(".cateInside").attr("id")){
+			$(".remove_cate").show();
+			$(".edit_cate").show();
+			$(".cateInside").removeClass('active');
+			$(this).children(".cateInside").addClass('active');
+		}else{
+			$(".remove_pic").hide();
+			$(".edit_cate").hide();
+		}
+		if($(".picInside>img").length >= 6){
+			$(".add_cate").hide();
+		}else{
+			$(".add_cate").show();
+		}
+	});
+
+	$(document).on('click',".remove_pic",function(){
+		$(".black_bak").show();
+		$(".message_alert_round").show();
+	});
+
+	$(document).on("click",".message_alert_round .submit",function(){
+		var id = $(".cateContent>div .active").data("id");
+		if(id){
+			$.ajax({
+		       	url: "__URL__/removeCate",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"id":id},
+		       	error: function () {
+		           	//出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+		           	console.log(data);
+		           	if(data.code == 0){
+		           		$(".black_bak").hide();
+						$(".message_alert_round").hide();
+						$("#Round").trigger("click");
+		           	}
+		           // showNotify(-1,'查询成功',1,'warning',0);
+		       	}
+		   	});
+		}
+	});
+</script>

@@ -9,7 +9,7 @@ class Round extends Controller
 	{
 		$picArr = model('common/Round','model')->getPic();
 		while (count($picArr) < 3){
-			 array_push($picArr, ['ID'=>'']);
+			array_push($picArr, ['ID'=>'']);
 		}
 		$this->assign('picList',$picArr);
 		return ['code' => 0, 'html' => $this->fetch()];

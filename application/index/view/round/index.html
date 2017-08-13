@@ -27,18 +27,18 @@
 	   	formData.append("upfile", file);
 	   	xhr.onreadystatechange = function() {
 	       	if (xhr.readyState == 4) {
-	           var resp;
-	           try{
+	           	var resp;
+	           	try{
 	              	resp= $.parseJSON(xhr.responseText);
-	           }catch(e){
+	           	}catch(e){
 	               resp = {msg_type:'danger',msg:'图片上传失败，请重试。'};
-	           }
-	           if(resp['code']==0){
+	           	}
+	           	if(resp['code']==0){
 	               if(succCallback) succCallback(resp['data']);
-	           }else{
+	           	}else{
 
-	           }
-	           if(endCallback) endCallback();
+	           	}
+	           	if(endCallback) endCallback();
 	       }
 	   	};
 	   	xhr.open("POST", url, true);
@@ -83,24 +83,24 @@
 		var id = $(".picContent .active").data("id");
 		if(id){
 			$.ajax({
-		       url: "__URL__/removePic",
-		       type: 'POST',
-		       dataType: 'JSON',
-		       timeout: 30000,    //超时时间：30秒
-		       data: {"id":id},
-		       error: function () {
-		           //出现错误，直接显示通知。
-		       },
-		       success: function (data) {
-		           console.log(data);
-		           if(data.code == 0){
+		       	url: "__URL__/removePic",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"id":id},
+		       	error: function () {
+		           	//出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+		           	console.log(data);
+		           	if(data.code == 0){
 		           	$(".black_bak").hide();
 						$(".message_alert_round").hide();
 						$("#Round").trigger("click");
-		           }
+		           	}
 		           // showNotify(-1,'查询成功',1,'warning',0);
-		       }
-		   });
+		       	}
+		   	});
 		}
 	});
 
