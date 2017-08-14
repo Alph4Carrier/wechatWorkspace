@@ -12,7 +12,7 @@ class Round extends Controller
 			array_push($picArr, ['ID'=>'']);
 		}
 		$this->assign('picList',$picArr);
-		return ['code' => 0, 'html' => $this->fetch()];
+		return json(['code' => 0, 'html' => $this->fetch()]);
 	}
 
 	public function removePic()
@@ -24,7 +24,21 @@ class Round extends Controller
     			$rst = model('common/Round','model')->removePic($id);
     			return $rst;
     		}else{
-    			return ['code' => -2, 'msg' => 'param error.'];
+    			return json(['code' => -2, 'msg' => 'param error.']);
+    		}
+    	}
+	}
+
+	public function addPic()
+	{
+		$request = request();
+    	if ($request->isPost()){
+    		$path = $request->post("picPath");
+    		if ($path){
+    			$rst = model('common/Round','model')->addPic($path);
+    			return $rst;
+    		}else{
+    			return json(['code' => -2, 'msg' => 'param error.']);
     		}
     	}
 	}

@@ -1,28 +1,46 @@
 <div class="title">产品分类设置</div>
 <div class="cateContent">
-	{volist name="cateList" id="cate"}
-		{if condition="$cate.ID"}
+	<div>
+		{volist name="cateList" id="cate"}
 			<div>
-				<div class="cateInside" id="cate_{$cate.ID}" data-id="{$cate.ID}"><img src="{$cate.source_url}" width="100%" height="100%"></div>
-				<span>{$cate.title}</span>
+				<div class="cateInside" id="cate_{$cate.ID}" data-id="{$cate.ID}"><img src="{$cate.pic}" width="100%" height="100%"></div>
+				<span>{$cate.name}</span>
 			</div>
-		{else /}
-			<div>
-				<div class="cateInside"></div>
-				<span>产品分类标题</span>
-			</div>
-		{/if}
-	{/volist}
-	<button class="add_cate">添加横幅</button>
-	<button class="remove_cate">删除横幅</button>
-	<button class="edit_cate">修改横幅</button>
+		{/volist}
+	</div>
+	<button class="add_cate">添加分类</button>
+	<button class="remove_cate">删除分类</button>
+	<button class="edit_cate">修改分类</button>
 </div>
 
 <div class="message_alert_round">
-	<div class="header"><span>删除分类确认</span><a></a></div>
-	<span>删除分类后，该分类内的所有产品数据将删除清空，是否确认删除</span>
+	<div class="header"><span>删除分类确认</span><i></i></div>
+	<span style="margin-left: 25px;">删除分类后，该分类内的所有产品数据将删除清空，是否确认删除</span>
 	<button class="submit">确定</button>
-	<button class="cancle">取消</button>
+	<button class="cancel">取消</button>
+</div>
+
+<div class="message_alert_category_add">
+	<div class="header">
+		<span>添加分类</span>
+		<i></i>
+	</div>
+	<div class="cate_name">
+		<span>分类名称:</span>
+		<input id="add_name" type="text" placeholder="请输入分类名称" >
+	</div>
+	<div class="cate_pic">
+		<span>分类封面:</span>
+		<div class="add_content">
+			<div></div>
+			<span>建议上传封面尺寸：359×210像素</span>
+			<button>上传</button>
+			<input type="file" id="add_pic">
+		</div>
+	</div>
+	<button class="submit">添加</button>
+	<button class="edit">修改</button>
+	<button class="cancel">取消</button>
 </div>
 
 <script type="text/javascript">
@@ -34,14 +52,14 @@
 	  	$('.cateInside').css('height',newWidth * 0.56 + "px");
 	}).resize();
 
-	$(document).on("click",".cateContent>div",function(){
+	$(document).on("click",".cateContent>div>div",function(){
+		$(".cateInside").removeClass('active');
 		if($(this).children(".cateInside").attr("id")){
 			$(".remove_cate").show();
 			$(".edit_cate").show();
-			$(".cateInside").removeClass('active');
 			$(this).children(".cateInside").addClass('active');
 		}else{
-			$(".remove_pic").hide();
+			$(".remove_cate").hide();
 			$(".edit_cate").hide();
 		}
 		if($(".picInside>img").length >= 6){
@@ -51,9 +69,29 @@
 		}
 	});
 
-	$(document).on('click',".remove_pic",function(){
+	$(document).on('click',".remove_cate",function(){
 		$(".black_bak").show();
 		$(".message_alert_round").show();
+	});
+
+	$(document).on('click',".add_cate",function(){
+		$(".black_bak").show();
+		$("#add_name").val("");
+		$(".add_content>div").html("");
+		$(".message_alert_category_add .submit").show();
+		$(".message_alert_category_add .edit").hide();
+		$(".message_alert_category_add .header>span").html("添加分类");
+		$(".message_alert_category_add").show();
+	});
+
+	$(document).on("click",".cancel",function(){
+		$(this).parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$(document).on("click",".header>i",function(){
+		$(this).parent().parent().hide();
+		$(".black_bak").hide();
 	});
 
 	$(document).on("click",".message_alert_round .submit",function(){
@@ -66,18 +104,126 @@
 		       	timeout: 30000,    //超时时间：30秒
 		       	data: {"id":id},
 		       	error: function () {
-		           	//出现错误，直接显示通知。
+		           //出现错误，直接显示通知。
 		       	},
 		       	success: function (data) {
-		           	console.log(data);
-		           	if(data.code == 0){
-		           		$(".black_bak").hide();
+	           	if(data.code == 0){
+	           		$(".black_bak").hide();
 						$(".message_alert_round").hide();
-						$("#Round").trigger("click");
-		           	}
-		           // showNotify(-1,'查询成功',1,'warning',0);
+						var roundList = data.data;
+		       			$(".cateContent>div").html("");
+		       			for(var i in roundList){
+		       				$(".cateContent>div").append('<div><div class="cateInside" id="cate_'+roundList[i]["ID"]+'" data-id="'+roundList[i]["ID"]+'"><img src="'+roundList[i]["pic"]+'" width="100%" height="100%"></div><span>'+roundList[i]["name"]+'</span></div>');
+		       			}
+		       			$(window).resize();
+						showMessageTip("删除成功");
+						$(".remove_cate").hide();
+						$(".edit_cate").hide();
+	           	}
 		       	}
 		   	});
 		}
 	});
+
+	$(document).on("click",".edit_cate",function(){
+		var dom = $(".cateContent .active");
+		var id = dom.data("id");
+		var name = dom.siblings("span").html();
+		var pic = dom.children("img").attr("src");
+		$("#add_name").val(name);
+		$(".add_content>div").html("");
+		$(".add_content>div").append("<img width='100%' height='100%' src='"+pic+"'>");
+		$(".message_alert_category_add .header>span").html("修改分类");
+		$(".message_alert_category_add .edit").show();
+		$(".message_alert_category_add .submit").hide();
+		$(".black_bak").show();
+		$(".message_alert_category_add").show();
+	});
+
+	$(document).on("click",".message_alert_category_add .edit",function(){
+		var dom = $(".cateContent .active");
+		var id = dom.data("id");
+		var name = $("#add_name").val();
+		var pic = $(".add_content>div>img").attr("src");
+		if(name && pic && id){
+			$.ajax({
+		       	url: "__URL__/editCate",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"id":id,"name":name,"pic":pic},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".cateContent>div").html("");
+		       			for(var i in roundList){
+		       				$(".cateContent>div").append('<div><div class="cateInside" id="cate_'+roundList[i]["ID"]+'" data-id="'+roundList[i]["ID"]+'"><img src="'+roundList[i]["pic"]+'" width="100%" height="100%"></div><span>'+roundList[i]["name"]+'</span></div>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_category_add").hide();
+		       			showMessageTip("修改成功");
+		       			$(".remove_cate").hide();
+						$(".edit_cate").hide();
+	           	}
+		       	}
+		   	});
+		}else{
+			if(!name){
+				showMessageTip("请填写分类名称！","warning");
+			}else if(!pic){
+				showMessageTip("请上传封面图片！","warning");
+			}
+		}
+	});
+
+	$(document).on("click",".message_alert_category_add .submit",function(){
+		var name = $("#add_name").val();
+		var pic = $(".add_content>div>img").attr("src");
+		if(name && pic){
+			$.ajax({
+		       	url: "__URL__/addCate",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"name":name,"pic":pic},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".cateContent>div").html("");
+		       			for(var i in roundList){
+		       				$(".cateContent>div").append('<div><div class="cateInside" id="cate_'+roundList[i]["ID"]+'" data-id="'+roundList[i]["ID"]+'"><img src="'+roundList[i]["pic"]+'" width="100%" height="100%"></div><span>'+roundList[i]["name"]+'</span></div>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_category_add").hide();
+		       			showMessageTip("添加成功");
+	           	}
+		       	}
+		   	});
+		}else{
+			if(!name){
+				showMessageTip("请填写分类名称！","warning");
+			}else if(!pic){
+				showMessageTip("请上传封面图片！","warning");
+			}
+		}
+	});
+
+	$('#add_pic').change(function(){
+       picUpload(this.files.item(0),function(data){
+       		if(data.code == 0){
+       			var img = data.filePath;
+       			$(".add_content>div").html("");
+       			$(".add_content>div").append("<img width='100%' height='100%' src='/uploads/"+data.filePath+"'>");
+       		}
+       });
+       this.value='';
+   	});
 </script>

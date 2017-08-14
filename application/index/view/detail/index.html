@@ -1,0 +1,110 @@
+<div class="title">产品详情设置</div>
+<div class="detailContent">
+	<div class="header">
+		<span>产品分类:</span>
+		<select id="cate_select">
+			{volist name="cateList" id="cate"}
+				<option value="{$cate.ID}">{$cate.name}</option>
+			{/volist}
+		</select>
+		<button class="add_production">添加产品</button>
+		<button style="display: none;" class="remove_production">删除产品</button>
+	</div>
+	<div class="productList">
+		{if condition="$productionList"}
+			<table class="productTable">
+				<tr class="trhead">
+					<td id="selectAll"><i></i></td>
+					<td width="27.1%">产品名称</td>
+					<td width="55.4%">产品描述</td>
+					<td width="9.2%">操作</td>
+				</tr>
+				{volist name="productionList" id="production"}
+					<tr class="prod_list" data-id="{$production.ID}">
+						<td><i></i></td>
+						<td>{$production.title}</td>
+						<td style="overflow: hidden;">{$production.content}</td>
+						<td style="display: none;">{$production.pic}</td>
+						<td class="edit_prod"><span>编辑</span></td>
+					</tr>
+				{/volist}
+			</table>
+		{/if}
+	</div>
+</div>
+
+<div class="message_alert_detail_dialog">
+	<div class="header">
+		<span>添加产品</span>
+		<i></i>
+	</div>
+	<div class="alert_content">
+		<div>
+			<span>产品名称:</span>
+			<input id="pro_title" type="text" placeholder="请输入产品名称">
+		</div>
+		<div style="margin-top: 20px;">
+			<span>产品描述:</span>
+			<textarea id="pro_content"></textarea>
+		</div>
+		<div class="pro_img" style="margin-top: 20px;">
+			<span>产品图片:</span>
+			<button>添加</button>
+		</div>
+	</div>
+	<button class="submit">添加</button>
+	<button class="edit">修改</button>
+	<button class="cancel">取消</button>
+</div>
+
+<script type="text/javascript">
+	$(document).on("click",".prod_list i",function(){
+		if($(this).hasClass('active')){
+			$(this).removeClass('active');
+			$("#selectAll>i").removeClass('active');
+		}else{
+			$(this).addClass('active');
+		}
+		if($(".prod_list .active").length){
+			$(".remove_production").show();
+		}else{
+			$(".remove_production").hide();
+		}
+	});
+
+	$(document).on("click","#selectAll>i",function(){
+		if($(this).hasClass('active')){
+			$(".prod_list>td>i").removeClass('active');
+			$(this).removeClass('active');
+		}else{
+			$(this).addClass('active');
+			$(".prod_list>td>i").addClass('active');
+		}
+		if($(".prod_list .active").length){
+			$(".remove_production").show();
+		}else{
+			$(".remove_production").hide();
+		}
+	});
+
+	$(document).on("click",".add_production",function(){
+		$(".black_bak").show();
+		$("#pro_title").val("");
+		$("#pro_content").text("");
+		$(".pro_img>div").remove();
+		$(".message_alert_detail_dialog .submit").show();
+		$(".message_alert_detail_dialog .edit").hide();
+		$(".message_alert_detail_dialog .header>span").html("添加产品");
+		$(".message_alert_detail_dialog").show();
+	});
+
+	$(document).on("click",".header>i",function(){
+		$(this).parent().parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$(document).on("click",".cancel",function(){
+		$(this).parent().hide();
+		$(".black_bak").hide();
+	});
+</script>

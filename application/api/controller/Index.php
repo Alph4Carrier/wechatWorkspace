@@ -7,8 +7,4 @@ class Index
     {
         return 'this is api controller';
     }
-
-    public function pictureUpload() {
-    	$request = request();
-   	}
 }

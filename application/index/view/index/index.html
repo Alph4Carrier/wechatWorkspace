@@ -10,13 +10,13 @@
 </head>
 <body>
 	<div class="black_bak"></div>
-	<div class="message_tip"><img><span></span></div>
+	<div class="message_tip"><i></i><span></span></div>
 	<div class="main">
 		<div class="sidebar">
 			<p></p>
 			<ul class="toolbar">
 				<li>
-					<div><img src="" width="25px" height="25px"><span>首页设置</span><i></i></div>
+					<div><img src="/static/img/home.png" width="25px" height="25px"><span>首页设置</span><i></i></div>
 					<ul>
 						<li class="setting" id="Round">横幅设置</li>
 						<li class="setting" id="Category">产品分类设置</li>
@@ -37,11 +37,42 @@
 </body>
 
 <script type="text/javascript">
-	function showMessageTip(msg){
+	function picUpload(file,succCallback,endCallback){
+	   	var url = "//" + document.domain + "/index/Upload";
+	   	var xhr = new XMLHttpRequest();
+	   	var formData = new FormData();
+	   	formData.append("image", file);
+	   	xhr.onreadystatechange = function() {
+	       	if (xhr.readyState == 4) {
+           	var resp;
+           	try{
+              		resp= $.parseJSON(xhr.responseText);
+           	}catch(e){
+               	resp = {msg_type:'danger',msg:'图片上传失败，请重试。'};
+           	}
+           	if(resp['code']==0){
+               	if(succCallback) succCallback(resp);
+           	}else{
+
+           	}
+           	if(endCallback) endCallback();
+	       }
+	   	};
+	   	xhr.open("POST", url, true);
+	   	xhr.send(formData);
+	}
+
+	function showMessageTip(msg,type){
 		$(".message_tip>span").html(msg);
+		if(type == "warning"){
+			$(".message_tip>i").addClass('warning');
+		}else{
+			$(".message_tip>i").removeClass('warning');
+		}
 		$(".message_tip").animate({"top":"0px"});
-		setTimeout(function(){
-			$(".message_tip").animate({"top":"-30px"});
+		clearTimeout(window.timeMachine);
+		window.timeMachine = setTimeout(function(){
+			$(".message_tip").animate({"top":"-40px"});
 		},3000);
 	}
 
@@ -109,11 +140,19 @@
 		if($(this).hasClass("active")){
 			$(this).removeClass("active");
 			$(this).siblings("ul").animate({"height":"0"});
+			$(this).children("i").removeClass('up');
 		}else{
 			$(this).addClass("active");
 			var count = $(this).siblings("ul").children("li").length;
 			$(this).siblings("ul").animate({"height":count * 30 + "px"});
+			$(this).children("i").addClass('up');
 		}
+	});
+
+	$(".toolbar>li>div").hover(function(){
+		$(this).children("i").show();
+	},function(){
+		$(this).children("i").hide();
 	});
 
 	initButtonCookie();

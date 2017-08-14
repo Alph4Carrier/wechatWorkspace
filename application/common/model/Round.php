@@ -17,12 +17,29 @@ class Round extends Model
 		if(!empty($id)){
 			$rst = db::name('round')->where('ID',$id)->update(['del'=>"1"]);
 			if($rst){
-				return ['code'=>"0","msg"=>"delete complete."];
+				$rstList = db::name('round')->where('del',0)->select();
+				return json(['code'=>"0","data" => $rstList]);
 			}else{
-				return ['code'=>"-1","msg"=>"delete error."];
+				return json(['code'=>"-1","msg"=>"delete error."]);
 			}
 		}else{
-			return ['code'=>"-1","msg"=>"param error."];
+			return json(['code'=>"-1","msg"=>"param error."]);
+		}
+	}
+
+	public function addPic($path)
+	{
+		if(!empty($path)){
+			$data = ['source_url' => $path];
+			$rst = db::name('round')->insertGetId($data);
+			if($rst){
+				$rstList = db::name('round')->where('del',0)->select();
+				return json(['code'=>"0","data" => $rstList]);
+			}else{
+				return json(['code'=>"-1","msg"=>"delete error."]);
+			}
+		}else{
+			return json(['code'=>"-1","msg"=>"param error."]);
 		}
 	}
 
