@@ -1,0 +1,273 @@
+<div class="title">活动设置</div>
+<div class="detailContent">
+	<div class="header">
+		<button class="add_activity">添加活动</button>
+		<button style="display: none;" class="remove_activity">删除活动</button>
+	</div>
+	<div class="activityList">
+		<table class="productTable">
+			<tr class="trhead">
+				<td id="selectAll"><i></i></td>
+				<td width="27.1%">活动标题</td>
+				<td width="55.4%">活动描述</td>
+				<td width="9.2%">操作</td>
+			</tr>
+			{volist name="activityList" id="activity"}
+				<tr class="prod_list" data-id="{$activity.ID}">
+					<td><i></i></td>
+					<td class="proTitle">{$activity.title}</td>
+					<td class="proCont" style="overflow: hidden;">{$activity.content}</td>
+					<td class="proPic" style="display: none;">{$activity.pic}</td>
+					<td class="edit_prod"><span>编辑</span></td>
+				</tr>
+			{/volist}
+		</table>
+	</div>
+</div>
+
+<div class="message_alert_detail_dialog">
+	<div class="header">
+		<span>添加产品</span>
+		<i></i>
+	</div>
+	<div class="alert_content">
+		<div>
+			<span>活动标题:</span>
+			<input id="pro_title" type="text" placeholder="请输入产品名称">
+		</div>
+		<div style="margin-top: 20px;">
+			<span>活动内容:</span>
+			<textarea id="pro_content"></textarea>
+		</div>
+		<div class="pro_img">
+			<span>活动图片:</span>
+			<p>
+				<span class="button">添加<input type="file" name="image" id="add_pic"></span>
+			</p>
+		</div>
+	</div>
+	<input type="hidden" id="edit_id" value="">
+	<button class="submit">添加</button>
+	<button class="edit">修改</button>
+	<button class="cancel">取消</button>
+</div>
+
+<div class="message_alert_round">
+	<div class="header"><span>删除活动确认</span><i></i></div>
+	<span>删除活动后，该活动的所有数据将删除清空，是否确认删除</span>
+	<button class="submit">确定</button>
+	<button class="cancel">取消</button>
+</div>
+
+<script type="text/javascript">
+	$(".add_activity").on("click",function(){
+		$(".black_bak").show();
+		$("#pro_title").val("");
+		$("#pro_content").val("");
+		$(".pro_img .piece_pic").remove();
+		$(".message_alert_detail_dialog .submit").show();
+		$(".message_alert_detail_dialog .edit").hide();
+		$(".message_alert_detail_dialog .header>span").html("添加活动");
+		$(".message_alert_detail_dialog").show();
+	});
+
+	$(document).on("click",".prod_list i",function(){
+		if($(this).hasClass('active')){
+			$(this).removeClass('active');
+			$("#selectAll>i").removeClass('active');
+		}else{
+			$(this).addClass('active');
+		}
+		if($(".prod_list .active").length){
+			$(".remove_activity").show();
+		}else{
+			$(".remove_activity").hide();
+		}
+	});
+
+	$("#selectAll>i").on("click",function(){
+		if($(this).hasClass('active')){
+			$(".prod_list>td>i").removeClass('active');
+			$(this).removeClass('active');
+		}else{
+			$(this).addClass('active');
+			$(".prod_list>td>i").addClass('active');
+		}
+		if($(".prod_list .active").length){
+			$(".remove_activity").show();
+		}else{
+			$(".remove_activity").hide();
+		}
+	});
+
+	$(".header>i").on("click",function(){
+		$(this).parent().parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$(".cancel").on("click",function(){
+		$(this).parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$('#add_pic').change(function(){
+		picUpload(this.files.item(0),function(data){
+			if(data.code == 0){
+       			var img = data.filePath;
+       			$(".pro_img .button").before("<span class='piece_pic'><img src='/uploads/"+img+"' width='100%' height='100%'></span>");
+       			if($(".piece_pic").length >= 10){
+       				$(".pro_img .button").hide();
+       			}
+       		}
+		});
+       this.value='';
+	});
+
+	$(".message_alert_detail_dialog .submit").on("click",function(){
+		var title = $("#pro_title").val();
+		var content = $("#pro_content").val();
+		var picArr = $(".piece_pic>img");
+		var picObj = {};
+		if(title && content && (picArr.length > 0)){
+			var count = 0;
+			picArr.each(function(){
+				picObj[count] = $(this).attr("src");
+				count++;
+			});
+			picObj = JSON.stringify(picObj);
+			$.ajax({
+		       	url: "__URL__/addActivity",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"title":title,"content":content,"pic":picObj},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".prod_list").remove();
+		       			for(var i in roundList){
+		       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_detail_dialog").hide();
+		       			showMessageTip("添加成功");
+	           	}
+		       	}
+			});
+		}else if(!title){
+			showMessageTip("请输入活动标题！","warning");
+		}else if(!content){
+			showMessageTip("请输入活动内容！","warning");
+		}else if(picArr.length <= 0){
+			showMessageTip("请上传活动图片！","warning");
+		}
+	});
+
+	$(document).on("click",".edit_prod",function(){
+		$(".black_bak").show();
+		$("#edit_id").val($(this).parent().data("id"));
+		$("#pro_title").val($(this).siblings(".proTitle").html());
+		$("#pro_content").val($(this).siblings(".proCont").html());
+		$(".pro_img .piece_pic").remove();
+		var picArr = JSON.parse($(this).siblings(".proPic").html());
+		for(var i in picArr){
+			$(".pro_img .button").before("<span class='piece_pic'><img src='"+picArr[i]+"' width='100%' height='100%'></span>");
+		}
+		$(".message_alert_detail_dialog .submit").hide();
+		$(".message_alert_detail_dialog .edit").show();
+		$(".message_alert_detail_dialog .header>span").html("修改活动");
+		$(".message_alert_detail_dialog").show();
+	});
+
+	$(".message_alert_detail_dialog .edit").on("click",function(){
+		var actId = $("#edit_id").val();
+		var title = $("#pro_title").val();
+		var content = $("#pro_content").val();
+		var picArr = $(".piece_pic>img");
+		var picObj = {};
+		if(actId && title && content && (picArr.length > 0)){
+			var count = 0;
+			picArr.each(function(){
+				picObj[count] = $(this).attr("src");
+				count++;
+			});
+			picObj = JSON.stringify(picObj);
+			$.ajax({
+		       	url: "__URL__/editActivity",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"actId":actId,"title":title,"content":content,"pic":picObj},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".prod_list").remove();
+		       			for(var i in roundList){
+		       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_detail_dialog").hide();
+		       			showMessageTip("修改成功");
+	           	}
+		       	}
+		   	});
+		}else if(!title){
+			showMessageTip("请输入活动标题！","warning");
+		}else if(!content){
+			showMessageTip("请输入活动内容！","warning");
+		}else if(picArr.length <= 0){
+			showMessageTip("请上传活动图片！","warning");
+		}
+	});
+
+	$(".remove_activity").on("click",function(){
+		$(".black_bak").show();
+		$(".message_alert_round").show();
+	});
+
+	$(".message_alert_round .submit").on("click",function(){
+		var deleList = $(".prod_list .active");
+		var deleObj = {};
+		var count = 0;
+		if(deleList.length){
+			deleList.each(function(){
+				deleObj[count] = $(this).parent().parent().data("id");
+				count++;
+			});
+			deleObj = JSON.stringify(deleObj);
+			$.ajax({
+		       	url: "__URL__/deleActivity",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"deleId":deleObj},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".prod_list").remove();
+		       			for(var i in roundList){
+		       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_round").hide();
+		       			showMessageTip("删除成功");
+	           	}
+		       	}
+		   	});
+		}else{
+			showMessageTip("未选中任何活动","warning");
+		}
+	});
+</script>

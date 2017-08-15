@@ -52,7 +52,7 @@
 	  	$('.cateInside').css('height',newWidth * 0.56 + "px");
 	}).resize();
 
-	$(document).on("click",".cateContent>div>div",function(){
+	$(".cateContent>div>div").on("click",function(){
 		$(".cateInside").removeClass('active');
 		if($(this).children(".cateInside").attr("id")){
 			$(".remove_cate").show();
@@ -69,12 +69,12 @@
 		}
 	});
 
-	$(document).on('click',".remove_cate",function(){
+	$(".remove_cate").on('click',function(){
 		$(".black_bak").show();
 		$(".message_alert_round").show();
 	});
 
-	$(document).on('click',".add_cate",function(){
+	$(".add_cate").on('click',function(){
 		$(".black_bak").show();
 		$("#add_name").val("");
 		$(".add_content>div").html("");
@@ -84,17 +84,17 @@
 		$(".message_alert_category_add").show();
 	});
 
-	$(document).on("click",".cancel",function(){
+	$(".cancel").on("click",function(){
 		$(this).parent().hide();
 		$(".black_bak").hide();
 	});
 
-	$(document).on("click",".header>i",function(){
+	$(".header>i").on("click",function(){
 		$(this).parent().parent().hide();
 		$(".black_bak").hide();
 	});
 
-	$(document).on("click",".message_alert_round .submit",function(){
+	$(".message_alert_round .submit").on("click",function(){
 		var id = $(".cateContent>div .active").data("id");
 		if(id){
 			$.ajax({
@@ -125,7 +125,7 @@
 		}
 	});
 
-	$(document).on("click",".edit_cate",function(){
+	$(".edit_cate").on("click",function(){
 		var dom = $(".cateContent .active");
 		var id = dom.data("id");
 		var name = dom.siblings("span").html();
@@ -140,7 +140,7 @@
 		$(".message_alert_category_add").show();
 	});
 
-	$(document).on("click",".message_alert_category_add .edit",function(){
+	$(".message_alert_category_add .edit").on("click",function(){
 		var dom = $(".cateContent .active");
 		var id = dom.data("id");
 		var name = $("#add_name").val();
@@ -180,7 +180,7 @@
 		}
 	});
 
-	$(document).on("click",".message_alert_category_add .submit",function(){
+	$(".message_alert_category_add .submit").on("click",function(){
 		var name = $("#add_name").val();
 		var pic = $(".add_content>div>img").attr("src");
 		if(name && pic){

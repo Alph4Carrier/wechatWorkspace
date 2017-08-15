@@ -23,6 +23,7 @@ class Category extends Model
 		if (!empty($id)){
 			$rst = db::name('category')->where('ID',$id)->update(['del'=>"1"]);
 			if($rst){
+				db::name('production')->where('category_id',$id)->update(['del'=>"1"]);
 				$rstList = db::name('category')->where('del',0)->select();
 				return json(['code'=>"0","data" => $rstList]);
 			}else{

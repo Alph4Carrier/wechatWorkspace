@@ -10,26 +10,25 @@
 		<button class="add_production">添加产品</button>
 		<button style="display: none;" class="remove_production">删除产品</button>
 	</div>
+	<span class="no_cate">请先在产品分类设置中添加分类</span>
 	<div class="productList">
-		{if condition="$productionList"}
-			<table class="productTable">
-				<tr class="trhead">
-					<td id="selectAll"><i></i></td>
-					<td width="27.1%">产品名称</td>
-					<td width="55.4%">产品描述</td>
-					<td width="9.2%">操作</td>
+		<table class="productTable">
+			<tr class="trhead">
+				<td id="selectAll"><i></i></td>
+				<td width="27.1%">产品名称</td>
+				<td width="55.4%">产品描述</td>
+				<td width="9.2%">操作</td>
+			</tr>
+			{volist name="productionList" id="production"}
+				<tr class="prod_list" data-id="{$production.ID}">
+					<td><i></i></td>
+					<td class="proTitle">{$production.title}</td>
+					<td class="proCont" style="overflow: hidden;">{$production.content}</td>
+					<td class="proPic" style="display: none;">{$production.pic}</td>
+					<td class="edit_prod"><span>编辑</span></td>
 				</tr>
-				{volist name="productionList" id="production"}
-					<tr class="prod_list" data-id="{$production.ID}">
-						<td><i></i></td>
-						<td>{$production.title}</td>
-						<td style="overflow: hidden;">{$production.content}</td>
-						<td style="display: none;">{$production.pic}</td>
-						<td class="edit_prod"><span>编辑</span></td>
-					</tr>
-				{/volist}
-			</table>
-		{/if}
+			{/volist}
+		</table>
 	</div>
 </div>
 
@@ -47,17 +46,32 @@
 			<span>产品描述:</span>
 			<textarea id="pro_content"></textarea>
 		</div>
-		<div class="pro_img" style="margin-top: 20px;">
+		<div class="pro_img">
 			<span>产品图片:</span>
-			<button>添加</button>
+			<p>
+				<span class="button">添加<input type="file" name="image" id="add_pic"></span>
+			</p>
 		</div>
 	</div>
+	<input type="hidden" id="edit_id" value="">
 	<button class="submit">添加</button>
 	<button class="edit">修改</button>
 	<button class="cancel">取消</button>
 </div>
 
+<div class="message_alert_round">
+	<div class="header"><span>删除产品确认</span><i></i></div>
+	<span>删除产品后，该产品的所有数据将删除清空，是否确认删除</span>
+	<button class="submit">确定</button>
+	<button class="cancel">取消</button>
+</div>
+
 <script type="text/javascript">
+	if(!$("#cate_select>option").length){
+		$(".add_production").hide();
+		$(".no_cate").show();
+	}
+
 	$(document).on("click",".prod_list i",function(){
 		if($(this).hasClass('active')){
 			$(this).removeClass('active');
@@ -72,7 +86,7 @@
 		}
 	});
 
-	$(document).on("click","#selectAll>i",function(){
+	$("#selectAll>i").on("click",function(){
 		if($(this).hasClass('active')){
 			$(".prod_list>td>i").removeClass('active');
 			$(this).removeClass('active');
@@ -87,24 +101,222 @@
 		}
 	});
 
-	$(document).on("click",".add_production",function(){
+	$(".add_production").on("click",function(){
 		$(".black_bak").show();
 		$("#pro_title").val("");
-		$("#pro_content").text("");
-		$(".pro_img>div").remove();
+		$("#pro_content").val("");
+		$(".pro_img .piece_pic").remove();
 		$(".message_alert_detail_dialog .submit").show();
 		$(".message_alert_detail_dialog .edit").hide();
 		$(".message_alert_detail_dialog .header>span").html("添加产品");
 		$(".message_alert_detail_dialog").show();
 	});
 
-	$(document).on("click",".header>i",function(){
+	$(document).on("click",".edit_prod",function(){
+		$(".black_bak").show();
+		$("#edit_id").val($(this).parent().data("id"));
+		$("#pro_title").val($(this).siblings(".proTitle").html());
+		$("#pro_content").val($(this).siblings(".proCont").html());
+		$(".pro_img .piece_pic").remove();
+		var picArr = JSON.parse($(this).siblings(".proPic").html());
+		for(var i in picArr){
+			$(".pro_img .button").before("<span class='piece_pic'><img src='"+picArr[i]+"' width='100%' height='100%'></span>");
+		}
+		$(".message_alert_detail_dialog .submit").hide();
+		$(".message_alert_detail_dialog .edit").show();
+		$(".message_alert_detail_dialog .header>span").html("修改产品");
+		$(".message_alert_detail_dialog").show();
+	});
+
+	$(".header>i").on("click",function(){
 		$(this).parent().parent().hide();
 		$(".black_bak").hide();
 	});
 
-	$(document).on("click",".cancel",function(){
+	$(".cancel").on("click",function(){
 		$(this).parent().hide();
 		$(".black_bak").hide();
+	});
+
+	$('#add_pic').change(function(){
+		picUpload(this.files.item(0),function(data){
+			if(data.code == 0){
+       			var img = data.filePath;
+       			$(".pro_img .button").before("<span class='piece_pic'><img src='/uploads/"+img+"' width='100%' height='100%'></span>");
+       			if($(".piece_pic").length >= 10){
+       				$(".pro_img .button").hide();
+       			}
+       		}
+		});
+       this.value='';
+	});
+
+	$(".message_alert_detail_dialog .edit").on("click",function(){
+		var proId = $("#edit_id").val();
+		var title = $("#pro_title").val();
+		var content = $("#pro_content").val();
+		var picArr = $(".piece_pic>img");
+		var picObj = {};
+		if(proId && title && content && (picArr.length > 0)){
+			var cateId = $("#cate_select").val();
+			var count = 0;
+			picArr.each(function(){
+				picObj[count] = $(this).attr("src");
+				count++;
+			});
+			picObj = JSON.stringify(picObj);
+			if(cateId){
+				$.ajax({
+			       	url: "__URL__/editProduction",
+			       	type: 'POST',
+			       	dataType: 'JSON',
+			       	timeout: 30000,    //超时时间：30秒
+			       	data: {"proId":proId,"cateId":cateId,"title":title,"content":content,"pic":picObj},
+			       	error: function () {
+			           //出现错误，直接显示通知。
+			       	},
+			       	success: function (data) {
+		           	if(data.code == 0){
+		           		var roundList = data.data;
+			       			$(".prod_list").remove();
+			       			for(var i in roundList){
+			       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+			       			}
+			       			$(window).resize();
+			       			$(".black_bak").hide();
+							$(".message_alert_detail_dialog").hide();
+			       			showMessageTip("修改成功");
+		           	}
+			       	}
+			   	});
+			}
+
+		}else if(!title){
+			showMessageTip("请输入产品名称！","warning");
+		}else if(!content){
+			showMessageTip("请输入产品描述！","warning");
+		}else if(picArr.length <= 0){
+			showMessageTip("请上传产品图片！","warning");
+		}
+	});
+
+	$(".message_alert_detail_dialog .submit").on("click",function(){
+		var title = $("#pro_title").val();
+		var content = $("#pro_content").val();
+		var picArr = $(".piece_pic>img");
+		var picObj = {};
+		if(title && content && (picArr.length > 0)){
+			var cateId = $("#cate_select").val();
+			var count = 0;
+			picArr.each(function(){
+				picObj[count] = $(this).attr("src");
+				count++;
+			});
+			picObj = JSON.stringify(picObj);
+			if(cateId){
+				$.ajax({
+			       	url: "__URL__/addProduction",
+			       	type: 'POST',
+			       	dataType: 'JSON',
+			       	timeout: 30000,    //超时时间：30秒
+			       	data: {"cateId":cateId,"title":title,"content":content,"pic":picObj},
+			       	error: function () {
+			           //出现错误，直接显示通知。
+			       	},
+			       	success: function (data) {
+		           	if(data.code == 0){
+		           		var roundList = data.data;
+			       			$(".prod_list").remove();
+			       			for(var i in roundList){
+			       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+			       			}
+			       			$(window).resize();
+			       			$(".black_bak").hide();
+							$(".message_alert_detail_dialog").hide();
+			       			showMessageTip("添加成功");
+		           	}
+			       	}
+			   	});
+			}
+
+		}else if(!title){
+			showMessageTip("请输入产品名称！","warning");
+		}else if(!content){
+			showMessageTip("请输入产品描述！","warning");
+		}else if(picArr.length <= 0){
+			showMessageTip("请上传产品图片！","warning");
+		}
+	});
+
+	$("#cate_select").change(function(){
+		var cateId = $(this).val();
+		$("#selectAll .active").removeClass("active");
+		$(".remove_production").hide();
+		if(cateId){
+			$.ajax({
+		       	url: "__URL__/getProduction",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"cateId":cateId},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".prod_list").remove();
+		       			for(var i in roundList){
+		       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+		       			}
+		       			$(window).resize();
+	           	}
+		       	}
+		   	});
+		}
+	});
+
+	$(".remove_production").on("click",function(){
+		$(".black_bak").show();
+		$(".message_alert_round").show();
+	});
+
+	$(".message_alert_round .submit").on("click",function(){
+		var deleList = $(".prod_list .active");
+		var deleObj = {};
+		var cateId = $("#cate_select").val();
+		var count = 0;
+		if(deleList.length){
+			deleList.each(function(){
+				deleObj[count] = $(this).parent().parent().data("id");
+				count++;
+			});
+			deleObj = JSON.stringify(deleObj);
+			$.ajax({
+		       	url: "__URL__/deleProduction",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"cateId":cateId,"deleId":deleObj},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".prod_list").remove();
+		       			for(var i in roundList){
+		       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["title"]+'</td><td class="proCont" style="overflow: hidden;">'+roundList[i]["content"]+'</td><td class="proPic" style="display: none;">'+roundList[i]["pic"]+'</td><td class="edit_prod"><span>编辑</span></td></tr>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_round").hide();
+		       			showMessageTip("删除成功");
+	           	}
+		       	}
+		   	});
+		}else{
+			showMessageTip("未选中任何产品","warning");
+		}
 	});
 </script>

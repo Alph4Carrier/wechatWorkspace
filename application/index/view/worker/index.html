@@ -1,0 +1,166 @@
+<div class="title">客服设置</div>
+<div class="worker_content">
+	<table>
+		<tr class="head">
+			<td width="41.7%">客服类型</td>
+			<td width="41.7%">状态</td>
+			<td>操作</td>
+		</tr>
+		<tr>
+			<td>客服系统</td>
+			{if condition="$config['greate_chat_open'] eq 1"}
+				<td class="greate_open">已开启</td>
+			{else/}
+				<td class="greate_open">未开启</td>
+			{/if}
+			<td class="editor" id="greate_chat">编辑</td>
+		</tr>
+		<tr>
+			<td>电话接入</td>
+			{if condition="$config['phone_chat_open'] eq 1"}
+				<td class="phone_open">已开启</td>
+			{else/}
+				<td class="phone_open">未开启</td>
+			{/if}
+			<td style="display: none;"><input type="hidden" id="phone_number" value="{$config['phone_chat_number']}"></td>
+			<td class="editor" id="phone_chat">编辑</td>
+		</tr>
+	</table>
+</div>
+
+<div class="edit_greate_chat">
+	<div class="header">客服系统编辑<i></i></div>
+	<div class="set_content">
+		<div>名称：客服系统</div>
+		<div>
+			<span>状态：</span>
+			<i class="button"></i>
+		</div>
+	</div>
+	<button class="submit">保存</button>
+	<button class="cancel">取消</button>
+</div>
+
+<div class="edit_phone_chat">
+	<div class="header">号码编辑<i></i></div>
+	<div class="set_content">
+		<div>名称：号码接入</div>
+		<div>号码：<input tyle="text" id="set_number" value="" placeholder="请输入客服号码"></div>
+		<div>
+			<span>状态：</span>
+			<i class="button"></i>
+		</div>
+	</div>
+	<button class="submit">保存</button>
+	<button class="cancel">取消</button>
+</div>
+
+<script type="text/javascript">
+	$("#greate_chat").on("click",function(){
+		$(".black_bak").show();
+		$(".edit_greate_chat").show();
+		if($(".greate_open").html() == "已开启"){
+			$(".edit_greate_chat .button").addClass('active');
+		}else{
+			$(".edit_greate_chat .button").removeClass('active');
+		}
+	});
+
+	$("#phone_chat").on("click",function(){
+		$(".black_bak").show();
+		$(".edit_phone_chat").show();
+		if($(".phone_open").html() == "已开启"){
+			$(".edit_phone_chat .button").addClass('active');
+		}else{
+			$(".edit_phone_chat .button").removeClass('active');
+		}
+		$("#set_number").val($("#phone_number").val());
+	});
+
+	$(".header>i").on("click",function(){
+		$(this).parent().parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$(".cancel").on("click",function(){
+		$(this).parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$(".edit_greate_chat .button").on("click",function(){
+		if($(this).hasClass('active')){
+			$(this).removeClass('active');
+		}else{
+			$(this).addClass('active');
+		}
+	});
+
+	$(".edit_phone_chat .button").on("click",function(){
+		if($(this).hasClass('active')){
+			$(this).removeClass('active');
+		}else{
+			$(this).addClass('active');
+		}
+	});
+
+	$(".edit_greate_chat .submit").on("click",function(){
+		if($(this).siblings(".set_content").find(".button").hasClass('active')){
+			var greateChat = 1;
+		}else{
+			var greateChat = 0;
+		}
+		$.ajax({
+	       	url: "__URL__/editConfig",
+	       	type: 'POST',
+	       	dataType: 'JSON',
+	       	timeout: 30000,    //超时时间：30秒
+	       	data: {"greateChat":greateChat},
+	       	error: function () {
+	           //出现错误，直接显示通知。
+	       	},
+	       	success: function (data) {
+	           if(data.code == 0){
+	           	if(greateChat){
+	           		$(".greate_open").html("已开启");
+	           	}else{
+	           		$(".greate_open").html("未开启");
+	           	}
+	       			showMessageTip("修改成功");
+	       			$(".black_bak").hide();
+					$(".edit_greate_chat").hide();
+	       		}
+	       	}
+	   	});
+	});
+
+	$(".edit_phone_chat .submit").on("click",function(){
+		if($(this).siblings(".set_content").find(".button").hasClass('active')){
+			var phoneChat = 1;
+		}else{
+			var phoneChat = 0;
+		}
+		$.ajax({
+	       	url: "__URL__/editConfig",
+	       	type: 'POST',
+	       	dataType: 'JSON',
+	       	timeout: 30000,    //超时时间：30秒
+	       	data: {"phoneChat":phoneChat,"phoneNum":$("#set_number").val()},
+	       	error: function () {
+	           //出现错误，直接显示通知。
+	       	},
+	       	success: function (data) {
+	           if(data.code == 0){
+	           	if(phoneChat){
+	           		$(".phone_open").html("已开启");
+	           	}else{
+	           		$(".phone_open").html("未开启");
+	           	}
+	           	$("#phone_number").val($("#set_number").val());
+	       			showMessageTip("修改成功");
+	       			$(".black_bak").hide();
+					$(".edit_phone_chat").hide();
+	       		}
+	       	}
+	   	});
+	});
+</script>

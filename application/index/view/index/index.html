@@ -23,13 +23,13 @@
 						<li class="setting" id="Detail">产品详情设置</li>
 					</ul>
 				</li>
-				<li><div><img src="" width="25px" height="25px"><span>活动设置</span><i></i></div></li>
+				<li id="Activity" class="direct"><div><b></b><span>活动设置</span></div></li>
 				<li><div><img src="" width="25px" height="25px"><span>关于设置</span><i></i></div></li>
-				<li><div><img src="" width="25px" height="25px"><span>客服设置</span><i></i></div></li>
+				<li id="Worker" class="direct"><div><b></b><span>客服设置</span></div></li>
 				<li><div><img src="" width="25px" height="25px"><span>表单设置</span><i></i></div></li>
-				<li><div><img src="" width="25px" height="25px"><span>我要推广</span><i></i></div></li>
-				<li><div><img src="" width="25px" height="25px"><span>我要定制</span><i></i></div></li>
-				<li><div><img src="" width="25px" height="25px"><span>我的客户经理</span><i></i></div></li>
+				<li id="Advise" class="direct"><div><b></b><span>我要推广</span></div></li>
+				<li id="Diy" class="direct"><div><b></b><span>我要定制</span></div></li>
+				<li id="Manager" class="direct"><div><b></b><span>我的客户经理</span></div></li>
 			</ul>
 		</div>
 		<div class="content"></div>
@@ -88,15 +88,15 @@
 				c_name  = "selectModuleId";
 				c_start = document.cookie.indexOf(c_name + "=");
 			  	if (c_start != -1)
-			    { 
+			    {
 			    	c_start = c_start + c_name.length + 1;
 			    	c_end 	= document.cookie.indexOf(";", c_start);
 			    	if(c_end==-1) c_end = document.cookie.length;
-			        var selectId = unescape(document.cookie.substring(c_start,c_end))
-			    } 
+			       selectId = unescape(document.cookie.substring(c_start,c_end))
+			    }
 			}
 		}else{
-			var selectId = "Round";
+			selectId = "Round";
 			var exdate = new Date();
 			exdate.setDate(exdate.getDate() + 1);
 			document.cookie = "selectModuleId=" + id + ";expires=" + exdate.toGMTString();
@@ -105,6 +105,7 @@
 		if(selectId && init){
 			$("#" + selectId).parent().siblings("div").trigger("click");
 			$("#" + selectId).trigger("click");
+			$("#" + selectId + ">div").trigger("click");
 		}
 	}
 
@@ -134,18 +135,27 @@
 		initButtonCookie(id, false);
 		$(".setting").removeClass('active');
 		$(this).addClass('active');
+		$(".direct .active").removeClass('active');
 	});
 
 	$(document).on('click',".toolbar>li>div",function(){
-		if($(this).hasClass("active")){
-			$(this).removeClass("active");
-			$(this).siblings("ul").animate({"height":"0"});
-			$(this).children("i").removeClass('up');
-		}else{
+		if($(this).parent().hasClass('direct')){
+			$(".toolbar>li>ul .active").removeClass('active');
+			$(".direct .active").removeClass('active');
 			$(this).addClass("active");
-			var count = $(this).siblings("ul").children("li").length;
-			$(this).siblings("ul").animate({"height":count * 30 + "px"});
-			$(this).children("i").addClass('up');
+			ajaxRequest($(this).parent().attr("id"));
+			initButtonCookie($(this).parent().attr("id"), false);
+		}else{
+			if($(this).hasClass("active")){
+				$(this).removeClass("active");
+				$(this).siblings("ul").animate({"height":"0"});
+				$(this).children("i").removeClass('up');
+			}else{
+				$(this).addClass("active");
+				var count = $(this).siblings("ul").children("li").length;
+				$(this).siblings("ul").animate({"height":count * 30 + "px"});
+				$(this).children("i").addClass('up');
+			}
 		}
 	});
 
