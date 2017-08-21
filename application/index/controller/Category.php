@@ -4,7 +4,7 @@ namespace app\index\controller;
 
 use think\Controller;
 
-class Category extends Controller
+class Category extends Common
 {
 	public function index()
 	{

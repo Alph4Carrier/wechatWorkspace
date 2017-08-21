@@ -4,7 +4,7 @@ namespace app\index\controller;
 
 use think\Controller;
 
-class Advise extends Controller
+class Advise extends Common
 {
 	public function index()
 	{

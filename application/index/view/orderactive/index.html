@@ -1,0 +1,140 @@
+<div class="title">活动报名</div>
+<div class="detailContent">
+	<div class="header">
+		<div class="date" id="startDate">
+			<div>开始时间：</div>
+        	<input type="text" data-date-format="YYYY-MM-DD" size="10" id="startDay" name="startDay" value="{$startDay}" readonly/>
+        	<span class="add-on"><i class="icon-th"></i></span>
+    	</div>
+    	<div class="date" id="endDate">
+    		<div>结束时间：</div>
+        	<input type="text" data-date-format="YYYY-MM-DD" size="10" id="endDay" name="endDay" value="{$endDay}" readonly/>
+        	<span class="add-on"><i class="icon-th"></i></span>
+    	</div>
+		<button class="add_activity" id="export">导出表单</button>
+	</div>
+	<div class="activityList">
+		<table class="productTable">
+			<tr class="trhead">
+				<td id="selectAll"><i></i></td>
+				<td width="20%">姓名</td>
+				<td width="30%">活动名称</td>
+				<td width="20%">电话</td>
+				<td width="20%">时间</td>
+			</tr>
+			{volist name="orderList" id="order"}
+				<tr class="prod_list" data-id="{$order.ID}">
+					<td><i></i></td>
+					<td class="proTitle">{$order.name}</td>
+					<td class="proTitle">{$order.proName}</td>
+					<td class="proCont">{$order.phone}</td>
+					<td class="proPic">{$order.day}</td>
+				</tr>
+			{/volist}
+		</table>
+		{$page}
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	$('#startDate').datetimepicker({
+		language: 'zh-CN',
+	    startView: 'month',
+	    minView: 'month',
+	    format: 'yyyy-mm-dd',
+	    pickTime: false,
+	    endDate : $('#endDay').val(),
+	}).on('changeDate', function(ev){
+	    afterChangeDate("getOrder?page=1");
+	}).on('hide', function(event) {
+	    event.preventDefault();
+	    event.stopPropagation();
+	    var startTime = event.date;
+	    $('#endDate').datetimepicker('setStartDate',startTime);
+	});
+	$('#endDate').datetimepicker({
+		language: 'zh-CN',
+	    startView: 'month',
+	    minView: 'month',
+	    format: 'yyyy-mm-dd',
+	    pickTime: false,
+	    endDate : $('#endDay').val(),
+	    startDate: $('#startDay').val()
+	}).on('changeDate', function(ev){
+	    afterChangeDate("getOrder?page=1");
+	}).on('hide', function(event) {
+	    event.preventDefault();
+	    event.stopPropagation();
+	    var endTime = event.date;
+	    $('#startDate').datetimepicker('setEndDate',endTime);
+	});
+})
+
+	function afterChangeDate(urls){
+		var startDay = $('#startDay').val();
+		var endDay = $('#endDay').val();
+		$.ajax({
+	       	url: "__URL__/" + urls + "&startDay="+startDay+"&endDay="+endDay,
+	       	type: 'GET',
+	       	dataType: 'JSON',
+	       	timeout: 30000,    //超时时间：30秒
+	       	error: function () {
+	           //出现错误，直接显示通知。
+	       	},
+	       	success: function (data) {
+           	if(data.code == 0){
+           		var roundList = data.data.list.data;
+	       			$(".prod_list").remove();
+	       			for(var i in roundList){
+	       				$(".productTable").append('<tr class="prod_list" data-id="'+roundList[i]["ID"]+'"><td><i></i></td><td class="proTitle">'+roundList[i]["name"]+'</td><td class="proTitle">'+roundList[i]["proName"]+'</td><td class="proCont">'+roundList[i]["phone"]+'</td><td class="proPic">'+roundList[i]["day"]+'</td></tr>');
+	       			}
+	       			$(".pagination").remove();
+	       			$(".activityList").append(data.data.page);
+	       			$(window).resize();
+	       			$("#selectAll>i").removeClass('active');
+           	}
+	       	}
+		});
+	}
+	$(document).on("click",".prod_list i",function(){
+		if($(this).hasClass('active')){
+			$(this).removeClass('active');
+			$("#selectAll>i").removeClass('active');
+		}else{
+			$(this).addClass('active');
+		}
+	});
+
+	$("#selectAll>i").on("click",function(){
+		if($(this).hasClass('active')){
+			$(".prod_list>td>i").removeClass('active');
+			$(this).removeClass('active');
+		}else{
+			$(this).addClass('active');
+			$(".prod_list>td>i").addClass('active');
+		}
+	});
+
+	$("#export").on("click",function(){
+		var selectIdArr = $(".prod_list .active");
+		var selectIdObj = {};
+		var count = 0;
+		selectIdArr.each(function(){
+			selectIdObj[count] = $(this).parent().parent().data("id");
+			count++
+		});
+		selectIdObj = JSON.stringify(selectIdObj);
+		$.ajax({
+            url: '__URL__' + '/excelExport',
+            type: 'get',
+            dataType: 'JSON',
+            timeout: 30000, //超时时间：30秒
+            data: {"ids":selectIdObj,"startDay":$('#startDay').val(),"endDay":$('#endDay').val()},
+            complete: function() {
+                //转到下载
+                window.location= '__URL__' + '/excelExport?startDay='+$('#startDay').val()+"&endDay="+$('#endDay').val()+"&ids="+selectIdObj;
+            }
+        });
+	});
+</script>

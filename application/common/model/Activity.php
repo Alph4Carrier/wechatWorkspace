@@ -18,6 +18,12 @@ class Activity extends Model
 		return $rst;
 	}
 
+	public function getActivityById($id)
+	{
+		$rst = db::name('activity')->where('del',0)->where("ID",$id)->select();
+		return $rst;
+	}
+
 	public function editActivity($where,$data)
 	{
 		if (!empty($where['ID'])){

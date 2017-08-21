@@ -3,7 +3,7 @@ namespace app\index\controller;
 
 use think\Controller;
 
-class Round extends Controller
+class Round extends Common
 {
 	public function index()
 	{

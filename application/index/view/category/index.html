@@ -52,7 +52,7 @@
 	  	$('.cateInside').css('height',newWidth * 0.56 + "px");
 	}).resize();
 
-	$(".cateContent>div>div").on("click",function(){
+	$(document).on("click",".cateContent>div>div",function(){
 		$(".cateInside").removeClass('active');
 		if($(this).children(".cateInside").attr("id")){
 			$(".remove_cate").show();

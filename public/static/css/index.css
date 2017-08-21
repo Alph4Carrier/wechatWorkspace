@@ -38,6 +38,7 @@ body {
 	position: absolute;
 	left: 240px;
 	border-left: 1px solid #E8E8E8;
+	overflow-y: auto;
 }
 
 .sidebar>p {
@@ -84,6 +85,7 @@ body {
 	padding: 0;
 	overflow: hidden;
 	height: 0;
+	margin: 0;
 }
 
 .toolbar ul>li {
@@ -144,6 +146,7 @@ body {
 
 .picInside>img {
 	position: absolute;
+	height: 100% !important;
 }
 
 .picContent>span {
@@ -770,7 +773,7 @@ body {
 	float: left;
 }
 
-.message_alert_detail_dialog .alert_content input,textarea,button{
+.message_alert_detail_dialog .alert_content input,.message_alert_detail_dialog .alert_content textarea,.message_alert_detail_dialog .alert_content button{
 	margin-left: 14px;
 }
 
@@ -1100,4 +1103,320 @@ body {
 
 #Manager .active b{
 	background-image: url("../img/manager_blue.png") !important;
+}
+
+#About b{
+	width: 25px;
+	height: 25px;
+	display: inline-block;
+	background-image: url("../img/about.png");
+	margin: 5px;
+	float: left;
+}
+
+#About .active b{
+	background-image: url("../img/about_blue.png") !important;
+}
+
+.aboutContent {
+	width: 375px;
+	min-height: 20px;
+	padding: 68px 20px 0 20px;
+	background: #FFFFFF;
+	border: 1px solid #CFCFCF;
+	margin: 20px;
+	position: relative;
+}
+
+.button_div {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+}
+
+.button_div>button {
+	width: 80px;
+	height: 28px;
+	border: 1px solid #D6D6D6;
+	border-radius: 2px;
+	background-color: #FFFFFF;
+	outline: none;
+	margin-left: 15px;
+}
+
+.button_div>button:active {
+	background: #F1F1F1;
+}
+
+.button_div .editModule,.button_div .deleModule {
+	display: none;
+}
+
+.module_block {
+	margin-bottom: 20px;
+	border: 0.5px solid #D6D6D6;
+}
+
+.module_block .img_b {
+	width: 373px;
+	height: 210px;
+	background: #D8D8D8;
+}
+
+.module_block_select {
+	border: 0.5px solid #0070C9 !important;
+}
+
+.module_block .txt_b {
+	width: 353px;
+	border-top: none;
+	padding: 8px 10px;
+}
+
+.module_block .txt_b>div {
+	height: 30px;
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #333333;
+	letter-spacing: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;  /*省略号*/
+	word-wrap: break-word;
+	-webkit-line-clamp: 2; /*只显示两行*/
+	-webkit-box-orient: vertical;
+}
+
+.add_module_dialog {
+	width: 600px;
+	height: 486px;
+	position: fixed;
+	z-index: 10001;
+	top: calc(50% - 243px);
+	left: calc(50% - 300px);
+	display: none;
+	background-color: #FFFFFF;
+}
+
+.add_module_dialog .header {
+	height: 40px;
+	background: #F6F6F6;
+	box-shadow: inset 0 -1px 0 0 #E8E8E8;
+	padding: 0 20px;
+	line-height: 40px;
+	font-family: SourceHanSansCN-Medium;
+	font-size: 14px;
+	color: #333333;
+	letter-spacing: 0;
+}
+
+.add_module_dialog .header>i {
+	width: 24px;
+	height: 24px;
+	float: right;
+	background: url("../img/close.png");
+	cursor: pointer;
+	margin: 8px;
+	margin-right: 0;
+}
+
+.add_module_dialog .module_content {
+	padding: 20px 40px;
+}
+
+.add_module_dialog .module_content>div>span {
+	font-family: SourceHanSansCN-Regular;
+	font-size: 14px;
+	color: #333333;
+	letter-spacing: 0;
+	float: left;
+	margin-right: 14px;
+}
+
+.add_module_dialog .img_con {
+	height: 218px;
+	width: 300px;
+	display: inline-block;
+}
+
+.add_module_dialog .img_con>div {
+	height: 180px;
+	width: 300px;
+	background-color: #F6F6F6;
+	background-image: url("../img/bk_head.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	margin-bottom: 10px;
+}
+
+.add_module_dialog .img_con .tip_pic {
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #666666;
+	letter-spacing: 0;
+	margin-right: 36px;
+}
+
+.add_module_dialog .img_con .add_pic>button {
+	width: 76px;
+	height: 28px;
+	border: 1px solid #D6D6D6;
+	border-radius: 2px;
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #333333;
+	letter-spacing: 0;
+	background-color: #FFFFFF;
+	position: relative;
+}
+
+.add_module_dialog .img_con .add_pic #add_pic {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 76px;
+	height: 28px;
+	opacity: 0;
+}
+
+.add_module_dialog .module_content #module_content{
+	width: 414px;
+	height: 104px;
+	border: 1px solid #D6D6D6;
+	border-radius: 2px;
+	padding: 8px 10px;
+	resize: none;
+	outline: none;
+}
+
+.add_module_dialog>button {
+	width: 80px;
+	height: 28px;
+	position: absolute;
+	right: 20px;
+	bottom: 20px;
+	background-color: #FFFFFF;
+	border: 1px solid #D6D6D6;
+	border-radius: 2px;
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #333333;
+	letter-spacing: 0;
+	outline: none;
+}
+
+.add_module_dialog .submit,.add_module_dialog .edit {
+	background: #0070C9;
+	border: 1px solid #0070C9;
+	color: white;
+	right: 110px;
+}
+
+#Order b{
+	width: 25px;
+	height: 25px;
+	display: inline-block;
+	background-image: url("../img/order.png");
+	margin: 5px;
+	float: left;
+}
+
+#Order .active b{
+	background-image: url("../img/order_blue.png") !important;
+}
+
+.date {
+	display: inline-block;
+	height: 30px;
+	width: 196px;
+	margin-top: 20px;
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #333333;
+	letter-spacing: 0;
+	line-height: 30px;
+	position: relative;
+	margin-right: 20px;
+}
+
+.date>input {
+	width: 108px;
+	height: 20px;
+	background: #FFFFFF;
+	border: 1px solid #D6D6D6;
+	border-radius: 2px;
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #333333;
+	letter-spacing: 0;
+}
+
+.date>span {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 25px;
+  	height: 25px;
+  	margin: 2px;
+}
+
+.date>div {
+	display: inline-block;
+	float: left;
+	margin-right: 14px;
+}
+
+.activityList {
+	padding: 0 10px;
+	margin-bottom: 60px;
+}
+
+.datetimepicker {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.datetimepicker-days .table-condensed,.datetimepicker-months .table-condensed{
+	background-color: #0070C9;
+}
+
+.datetimepicker-days .table-condensed>tbody,.datetimepicker-months .table-condensed>tbody {
+	background-color: #FFFFFF;
+}
+
+.datetimepicker-days .table-condensed th,.datetimepicker-months .table-condensed th {
+	border-radius: 0;
+	color: white;
+}
+
+.datetimepicker-days .table-condensed td,.datetimepicker-months .table-condensed td {
+	border-radius: 0;
+}
+
+.datetimepicker-days .table-condensed .prev:hover,.datetimepicker-days .table-condensed .switch:hover,.datetimepicker-days .table-condensed .next:hover,.datetimepicker-months .table-condensed .prev:hover,.datetimepicker-months .table-condensed .switch:hover,.datetimepicker-months .table-condensed .next:hover {
+	background-color: #0262af !important;
+}
+
+.pagination {
+	float: right;
+	margin: 0;
+	margin-top: 24px;
+}
+
+.pagination li{
+	display: inline-block;
+	height: 8px;
+	line-height: 8px;
+	font-family: SourceHanSansCN-Regular;
+	font-size: 12px;
+	color: #A1A8AE;
+	letter-spacing: 0;
+	padding: 10px;
+	background: #F6F6F6;
+	border-radius: 2px;
+	margin-left: 15px;
+	cursor: pointer;
+}
+
+.pagination li>a{
+	text-decoration: none;
 }

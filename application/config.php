@@ -236,4 +236,7 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
+
+    //接口提交密钥
+    'submit_order_sign_key' => "jhad#%@sgdsk4^@%#^783259478^@",
 ];

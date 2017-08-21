@@ -21,7 +21,7 @@ class Bootstrap extends Paginator
      * @param string $text
      * @return string
      */
-    protected function getPreviousButton($text = "&laquo;")
+    protected function getPreviousButton($text = "上一页")
     {
 
         if ($this->currentPage() <= 1) {
@@ -40,7 +40,7 @@ class Bootstrap extends Paginator
      * @param string $text
      * @return string
      */
-    protected function getNextButton($text = '&raquo;')
+    protected function getNextButton($text = '下一页')
     {
         if (!$this->hasMore) {
             return $this->getDisabledTextWrapper($text);
@@ -138,6 +138,11 @@ class Bootstrap extends Paginator
         return '<li><a href="' . htmlentities($url) . '">' . $page . '</a></li>';
     }
 
+    protected function getAvailablePageFunctionWrapper($url, $page)
+    {
+        return '<li><a onclick="' . htmlentities($url) . '">' . $page . '</a></li>';
+    }
+
     /**
      * 生成一个禁用的按钮
      *
@@ -200,6 +205,6 @@ class Bootstrap extends Paginator
             return $this->getActivePageWrapper($page);
         }
 
-        return $this->getAvailablePageWrapper($url, $page);
+        return $this->getAvailablePageFunctionWrapper($url, $page);
     }
 }

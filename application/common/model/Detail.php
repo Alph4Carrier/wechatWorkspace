@@ -18,6 +18,18 @@ class Detail extends Model
 		return $rst;
 	}
 
+	public function getAllProduction()
+	{
+		$rst = db::name('production')->where('del',0)->select();
+		return $rst;
+	}
+
+	public function getProductionByProId($cateId)
+	{
+		$rst = db::name('production')->where('del',0)->where("ID",$cateId)->select();
+		return $rst;
+	}
+
 	public function editProduction($where,$data)
 	{
 		if (!empty($where['ID'])){

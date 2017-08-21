@@ -5,8 +5,17 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
+	<link rel="Shortcut Icon" href="/static/img/53logo_large.png" type="image/png" />
+	<link rel="Bookmark" href="/static/img/53logo_large.png" type="image/png" />
+
+	<link href="/static/css/bootstrap.css" rel="stylesheet">
+	<link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link href="/static/plugin/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 	<link href="/static/css/index.css?v={$css_version}" rel="stylesheet" type="text/css" media="all">
 	<script type='text/javascript' src='/static/js/jquery-1.11.0.min.js' ></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script type='text/javascript' src="/static/plugin/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script type='text/javascript' src="/static/plugin/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
 </head>
 <body>
 	<div class="black_bak"></div>
@@ -24,9 +33,15 @@
 					</ul>
 				</li>
 				<li id="Activity" class="direct"><div><b></b><span>活动设置</span></div></li>
-				<li><div><img src="" width="25px" height="25px"><span>关于设置</span><i></i></div></li>
+				<li id="About" class="direct"><div><b></b><span>关于设置</span></div></li>
 				<li id="Worker" class="direct"><div><b></b><span>客服设置</span></div></li>
-				<li><div><img src="" width="25px" height="25px"><span>表单设置</span><i></i></div></li>
+				<li>
+					<div><img src="/static/img/order.png" width="25px" height="25px"><span>表单设置</span><i></i></div>
+					<ul>
+						<li class="setting" id="Order">产品预约</li>
+						<li class="setting" id="Orderactive">活动报名</li>
+					</ul>
+				</li>
 				<li id="Advise" class="direct"><div><b></b><span>我要推广</span></div></li>
 				<li id="Diy" class="direct"><div><b></b><span>我要定制</span></div></li>
 				<li id="Manager" class="direct"><div><b></b><span>我的客户经理</span></div></li>
@@ -114,6 +129,7 @@
 			$.ajax({
 		       url: "//" + document.domain + "/index/" + id,
 		       type: 'GET',
+		       headers: { Accept: "application/json; charset=utf-8" },
 		       dataType: 'JSON',
 		       timeout: 30000,    //超时时间：30秒
 		       error: function () {

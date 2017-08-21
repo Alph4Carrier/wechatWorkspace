@@ -3,14 +3,14 @@ namespace app\index\controller;
 
 use think\Controller;
 
-class Activity extends Controller
+class Activity extends Common
 {
 	public function index()
 	{
 		$activityList = array();
 		$activityList = model('common/Activity','model')->getActivity();
 		$this->assign("activityList", $activityList);
-		return json(['code' => 0, 'html' => $this->fetch()]);
+		return ['code' => 0, 'html' => $this->fetch()];
 	}
 
 	public function addActivity()

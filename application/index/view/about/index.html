@@ -1,0 +1,202 @@
+<div class="title">关于设置</div>
+<div class="aboutContent">
+	<div class="button_div">
+		<button class="addModule">添加模块</button>
+		<button class="editModule">编辑模块</button>
+		<button class="deleModule">删除模块</button>
+	</div>
+	{volist name="moduleList" id="module"}
+		<div class="module_block" data-id="{$module['ID']}">
+			<div class="img_b"><img width="100%" height="100%" src="{$module['source_pic']}"></div><div class="txt_b"><div>{$module['source_text']}</div></div>
+		</div>
+	{/volist}
+</div>
+
+<div class="add_module_dialog">
+	<div class="header"><span>添加模块</span><i></i></div>
+	<div class="module_content">
+		<div style="margin-bottom: 20px;">
+			<span>图片展示：</span>
+			<div class="img_con">
+				<div></div>
+				<span class="tip_pic">建议上传封面尺寸：750×420像素</span>
+				<span class="add_pic"><button>上传<input type="file" name="image" id="add_pic"></span></button>
+			</div>
+		</div>
+		<div>
+			<span>文字描述：</span>
+			<textarea id="module_content"></textarea>
+		</div>
+	</div>
+	<input type="hidden" id="module_id">
+	<button class="submit">添加</button>
+	<button class="edit">保存</button>
+	<button class="cancel">取消</button>
+</div>
+
+<div class="message_alert_round">
+	<div class="header"><span>删除模块确认</span><i></i></div>
+	<span>删除模块后，该模块的所有数据将删除清空，是否确认删除</span>
+	<button class="submit">确定</button>
+	<button class="cancel">取消</button>
+</div>
+
+<script type="text/javascript">
+	$(".addModule").on("click",function(){
+		$(".black_bak").show();
+		$("#module_content").val("");
+		$(".img_con>div").html("");
+		$(".add_module_dialog .submit").show();
+		$(".add_module_dialog .edit").hide();
+		$(".add_module_dialog .header>span").html("添加模块");
+		$(".add_module_dialog").show();
+	});
+
+	$(".header>i").on("click",function(){
+		$(this).parent().parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$(".cancel").on("click",function(){
+		$(this).parent().hide();
+		$(".black_bak").hide();
+	});
+
+	$('#add_pic').change(function(){
+		picUpload(this.files.item(0),function(data){
+			if(data.code == 0){
+       			var img = data.filePath;
+       			$(".img_con>div").html("");
+       			$(".img_con>div").append("<img src='/uploads/"+img+"' width='100%' height='100%'>");
+       		}
+		});
+       this.value='';
+	});
+
+	$(".add_module_dialog .submit").on("click",function(){
+		var content = $("#module_content").val();
+		var pic = $(".img_con>div>img").attr("src");
+		if(content && pic){
+			$.ajax({
+		       	url: "__URL__/addModule",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"content":content,"pic":pic},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".module_block").remove();
+		       			for(var i in roundList){
+		       				$(".aboutContent").append('<div class="module_block" data-id="'+roundList[i]["ID"]+'"><div class="img_b"><img width="100%" height="100%" src="'+roundList[i]["source_pic"]+'"></div><div class="txt_b"><div>'+roundList[i]["source_text"]+'</div></div></div>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".add_module_dialog").hide();
+		       			showMessageTip("添加成功");
+	           	}
+		       	}
+			});
+		}else if(!content){
+			showMessageTip("请输入文字描述！","warning");
+		}else if(!pic){
+			showMessageTip("请上传图片！","warning");
+		}
+	});
+
+	$(document).on("click",".module_block",function(){
+		$(".module_block_select").removeClass('module_block_select');
+		$(this).addClass('module_block_select');
+		$(".editModule").show();
+		$(".deleModule").show();
+	});
+
+	$(".editModule").on("click",function(){
+		$(".black_bak").show();
+		$("#module_content").val($(".module_block_select .txt_b>div").html());
+		$(".img_con>div").html("<img src="+$(".module_block_select .img_b>img").attr("src")+" width='100%' height='100%' >");
+		$("#module_id").val($(".module_block_select").data("id"));
+		$(".add_module_dialog .submit").hide();
+		$(".add_module_dialog .edit").show();
+		$(".add_module_dialog .header>span").html("修改模块");
+		$(".add_module_dialog").show();
+	});
+
+	$(".add_module_dialog .edit").on("click",function(){
+		var content = $("#module_content").val();
+		var pic = $(".img_con>div>img").attr("src");
+		var id = $("#module_id").val();
+		if(content && pic && id){
+			$.ajax({
+		       	url: "__URL__/editModule",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"content":content,"pic":pic,"id":id},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".module_block").remove();
+		       			for(var i in roundList){
+		       				$(".aboutContent").append('<div class="module_block" data-id="'+roundList[i]["ID"]+'"><div class="img_b"><img width="100%" height="100%" src="'+roundList[i]["source_pic"]+'"></div><div class="txt_b"><div>'+roundList[i]["source_text"]+'</div></div></div>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".add_module_dialog").hide();
+						$(".editModule").hide();
+						$(".deleModule").hide();
+		       			showMessageTip("修改成功");
+	           	}
+		       	}
+			});
+		}else if(!content){
+			showMessageTip("请输入文字描述！","warning");
+		}else if(!pic){
+			showMessageTip("请上传图片！","warning");
+		}
+	});
+
+	$(".deleModule").on("click",function(){
+		$(".black_bak").show();
+		$(".message_alert_round").show();
+	});
+
+	$(".message_alert_round .submit").on("click",function(){
+		var id = $(".module_block_select").data("id");
+		if(id){
+			$.ajax({
+		       	url: "__URL__/deleModule",
+		       	type: 'POST',
+		       	dataType: 'JSON',
+		       	timeout: 30000,    //超时时间：30秒
+		       	data: {"id":id},
+		       	error: function () {
+		           //出现错误，直接显示通知。
+		       	},
+		       	success: function (data) {
+	           	if(data.code == 0){
+	           		var roundList = data.data;
+		       			$(".module_block").remove();
+		       			for(var i in roundList){
+		       				$(".aboutContent").append('<div class="module_block" data-id="'+roundList[i]["ID"]+'"><div class="img_b"><img width="100%" height="100%" src="'+roundList[i]["source_pic"]+'"></div><div class="txt_b"><div>'+roundList[i]["source_text"]+'</div></div></div>');
+		       			}
+		       			$(window).resize();
+		       			$(".black_bak").hide();
+						$(".message_alert_round").hide();
+						$(".editModule").hide();
+						$(".deleModule").hide();
+		       			showMessageTip("删除成功");
+	           	}
+		       	}
+		   	});
+		}else{
+			showMessageTip("未选中任何模块","warning");
+		}
+	});
+</script>
